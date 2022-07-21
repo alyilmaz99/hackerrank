@@ -28,31 +28,52 @@ class Result
 
     public static long minimumPasses(long m, long w, long p, long n)
     {
-        long counter=0;
-        long candies =0;
-        while(candies<n){
-            if(m>w){
-                if(candies>=p){
-                        w += candies/p;
-                        candies += (m*w);
-                        counter++;
-                }else{
-                    candies += (w*m);
-                    counter++;
+         long passes = 0;
+            long candy = 0;
+            long run = long.MaxValue;
+            long step;
+
+            while (candy < n)
+            {
+                step = (m > long.MaxValue / w) ? 0 : (p - candy) / (m * w);
+
+                if (step <= 0)
+                {
+                    long mw = candy / p;
+
+                    if (m >= w + mw)
+                    {
+                        w += mw;
+                    }
+                    else if (w >= m + mw)
+                    {
+                        m += mw;
+                    }
+                    else
+                    {
+                        long total = m + w + mw;
+                        m = total / 2;
+                        w = total - m;
+                    }
+
+                    candy %= p;
+                    step = 1;
                 }
-            }else{
-                if(candies>=p){
-                    m += candies/p;
-                    candies += (m*w);
-                    counter++;
-                }else{
-                     candies += (w*m);
-                     counter++;
+
+                passes += step;
+
+                if (step * m > long.MaxValue / w)
+                {
+                    candy = long.MaxValue;
+                }
+                else
+                {
+                    candy += step * m * w;
+                    run = Math.Min(run, (long)(passes + Math.Ceiling((n - candy) / (m * w *1.0))));
                 }
             }
-        }
-        return counter;
-        
+
+            return Math.Min(passes, run);
     }
 
 }
